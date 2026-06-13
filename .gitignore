@@ -1,0 +1,3 @@
+*/.env
+*/.venv
+airflow/plugins/tasks/data_sample/*

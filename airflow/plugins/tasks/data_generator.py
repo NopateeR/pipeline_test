@@ -6,8 +6,10 @@ import os
 import shutil
 import datetime as dt
 from tqdm import tqdm
-
+import time
 random.seed(0)
+
+start = time.time()
 
 def gen_text(number_of_item, long_of_text, text_list):
     item_list = []
@@ -58,3 +60,5 @@ for i in tqdm(range(len(list_date))):
     data_date['product_name'] = random.choices(product_list, k = number_of_sensor)
     data_date['product_expire'] = list(map(lambda x : x + dt.timedelta(days = 90 - random.choices([1,2,3])[0]), data_date['create_at']))
     data_date.to_parquet(path)
+
+print(f"Runtime: {time.time() - start:.2f} seconds")
