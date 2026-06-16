@@ -41,10 +41,7 @@ poetry install
 
 -----
 To Run a full loop pipeline
-# 1. unzip 01-nopateer-datawow-data-pipeline zip file
-
-
-# 2. start up Airflow, PostgreSQL and Redis
+# 1. start up Airflow, PostgreSQL and Redis
 ```bash
 docker-compose up -d --build
 ```

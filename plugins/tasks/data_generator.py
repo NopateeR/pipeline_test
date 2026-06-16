@@ -11,16 +11,6 @@ random.seed(0)
 start = time.time()
 
 def generate_text(number_of_item, long_of_text, text_list):
-    """
-    Generate a list of unique random strings.
-
-    Args:
-        number_of_item (int): Number of unique strings to generate
-        long_of_text (int): Length of each random string
-        text_list (list): List of characters to use for generating strings
-    Returns:
-        list: List of unique random strings
-    """
     item_list = []
     while len(item_list) < number_of_item :
         item_name = ''.join(random.choices(text_list, k = long_of_text))
@@ -29,12 +19,6 @@ def generate_text(number_of_item, long_of_text, text_list):
     return item_list
 
 def execute(folder_path: str):
-    """
-    This function generates sample sensor data and saves it as parquet files
-    in the specified folder.
-    Args:
-        folder_path (str): Path to the folder where parquet files will be stored
-    """
     folder_name = str(folder_path)
     _last_folder_name = folder_name.split("/")[-1]
     if  _last_folder_name in os.listdir(path="/".join(folder_name.split("/")[:-1])) :

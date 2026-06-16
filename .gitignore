@@ -16,3 +16,4 @@ logs/*
 .vscode/*
 .poetry
 .poetry/*
+.DS_Store
