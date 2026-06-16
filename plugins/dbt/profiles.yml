@@ -1,0 +1,15 @@
+postgres:
+  target: prod
+  outputs:
+    prod:
+      type: postgres
+      host: "{{ env_var('DBT_HOST', 'host.docker.internal') }}"
+      port: 5432
+      user: "{{ env_var('DBT_USER', 'airflow') }}"
+      password: "{{ env_var('DBT_PASSWORD', 'airflow') }}"
+      dbname: "{{ env_var('DBT_DATABASE', 'datalake') }}"
+      schema: "{{ env_var('DBT_SCHEMA', 'mart') }}"
+      threads: 4
+      keepalives_idle: 0
+      connect_timeout: 10
+      retries: 1

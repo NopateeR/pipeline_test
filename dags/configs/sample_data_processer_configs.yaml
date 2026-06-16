@@ -1,0 +1,93 @@
+src_data_generator: 
+  start_date: "2026-06-14 00:00:00"
+  timezone: "Asia/Bangkok"
+  catchup: false
+  max_active_runs: 1
+  tags:
+    - src_data_generator
+  default_args:
+    owner: data-engineering
+    retries: 0
+  tasks:
+    generate_data:
+      operator: airflow.providers.standard.operators.python.PythonOperator
+      python_callable_file: "${PLUGINS_PATH}/tasks/data_generator.py"
+      python_callable_name: "execute"
+      op_kwargs:
+        folder_path: "${TEMP_PATH}/data_sample"
+    load_data_into_postgres:
+      operator: airflow.providers.standard.operators.python.PythonOperator
+      python_callable_file: "${PLUGINS_PATH}/tasks/parquet_loader.py"
+      python_callable_name: "load_parquet_into_postgres"
+      op_kwargs:
+        folder_path: "${TEMP_PATH}/data_sample"
+        database_name: "datalake"
+        schema_name: "raw_data"
+        table_name: "sensor_data"
+        connection_configs:
+          host: "postgres"
+          port: "5432"
+          user: "airflow"
+          password: "airflow"
+          database: "datalake"
+          conn_type: "postgresql"
+      dependencies: [generate_data]
+    load_dim_department:
+      operator: cosmos.operators.local.DbtRunLocalOperator
+      project_dir: "${PLUGINS_PATH}/dbt"
+      select: dim_department
+      profile_config:
+        __type__: cosmos.ProfileConfig
+        profile_name: postgres
+        target_name: prod
+        profiles_yml_filepath: "${PLUGINS_PATH}/dbt/profiles.yml"
+      install_deps: true
+      dependencies: [load_data_into_postgres]
+    load_dim_sensor:
+      operator: cosmos.operators.local.DbtRunLocalOperator
+      project_dir: "${PLUGINS_PATH}/dbt"
+      select: dim_sensor
+      profile_config:
+        __type__: cosmos.ProfileConfig
+        profile_name: postgres
+        target_name: prod
+        profiles_yml_filepath: "${PLUGINS_PATH}/dbt/profiles.yml"
+      install_deps: true
+      dependencies: [load_data_into_postgres]
+    load_dim_product:
+      operator: cosmos.operators.local.DbtRunLocalOperator
+      project_dir: "${PLUGINS_PATH}/dbt"
+      select: dim_product
+      profile_config:
+        __type__: cosmos.ProfileConfig
+        profile_name: postgres
+        target_name: prod
+        profiles_yml_filepath: "${PLUGINS_PATH}/dbt/profiles.yml"
+      install_deps: true
+      dependencies: [load_data_into_postgres]
+    load_fact_sensor_data:
+      operator: cosmos.operators.local.DbtRunLocalOperator
+      project_dir: "${PLUGINS_PATH}/dbt"
+      select: fact_sensor
+      profile_config:
+        __type__: cosmos.ProfileConfig
+        profile_name: postgres
+        target_name: prod
+        profiles_yml_filepath: "${PLUGINS_PATH}/dbt/profiles.yml"
+      install_deps: true
+      dependencies: [load_dim_product,load_dim_sensor,load_dim_department]
+
+    # load_dim_product:
+    #   operator: airflow.providers.standard.operators.python.PythonOperator
+    #   python_callable_file: "${PLUGINS_PATH}/tasks/postgres_transformer.py"
+    #   python_callable_name: "execute"
+    #   op_kwargs:
+    #     query_name: "dim_product"
+    #   dependencies: [load_dim_sensor]
+    # load_fact_sensor_data:
+    #   operator: airflow.providers.standard.operators.python.PythonOperator
+    #   python_callable_file: "${PLUGINS_PATH}/tasks/postgres_transformer.py"
+    #   python_callable_name: "execute"
+    #   op_kwargs:
+    #     query_name: "fact_sensor"
+    #   dependencies: [load_dim_product,load_dim_sensor,load_dim_department]

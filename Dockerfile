@@ -20,6 +20,7 @@ COPY --chown=airflow:root pyproject.toml poetry.lock /opt/airflow/
 WORKDIR /opt/airflow
 RUN poetry install --no-root --no-interaction --no-ansi --verbose
 
+RUN python -c "import duckdb; con = duckdb.connect(); con.execute('INSTALL postgres;')"
 
 
 EXPOSE 8080 5555 6379

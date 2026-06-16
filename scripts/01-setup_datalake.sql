@@ -1,0 +1,5 @@
+-- CREATE USER runner WITH PASSWORD 'runner001';
+
+CREATE DATABASE  datalake;
+
+CREATE SCHEMA IF NOT EXISTS raw_data;

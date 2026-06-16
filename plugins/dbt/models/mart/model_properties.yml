@@ -1,0 +1,19 @@
+
+models:
+  - name: dim_department
+    config:
+      materialized: table
+      schema: mart
+  - name: dim_product
+    config:
+      materialized: table
+      schema: mart
+  - name: dim_sensor
+    config:
+      materialized: table
+      schema: mart
+  - name: fact_sensor
+    config:
+      materialized: table
+      schema: mart
+    

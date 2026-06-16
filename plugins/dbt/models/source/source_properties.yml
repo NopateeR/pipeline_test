@@ -1,0 +1,6 @@
+sources:
+  - name: datalake.raw_data
+    database: datalake  
+    schema: raw_data  
+    tables:
+      - name: sensor_data
